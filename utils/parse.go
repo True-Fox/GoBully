@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+
 func Parse(args []string) (string, []string) {
 	if len(args) < 5 {
 		fmt.Println("Usage: ./go-bully --id <server-id> --list <comma-separated list of ports>")

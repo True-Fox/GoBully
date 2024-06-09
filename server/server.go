@@ -8,6 +8,7 @@ import (
 	"os"
 )
 
+
 //Start a http server
 func StartServer(mux *http.ServeMux, port string) {
 	fmt.Printf("Server started at port %s\n", port)

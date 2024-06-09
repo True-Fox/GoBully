@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+
 func main() {
 	var leader string
 
@@ -13,7 +14,7 @@ func main() {
 
 	mux := server.SetRoutes(&leader)
 	go server.StartServer(mux, idPort)
-	
+
 	utils.BullyAlgorithm(idPort, listPorts, &leader)
 	select {}
 }
