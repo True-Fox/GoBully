@@ -34,5 +34,6 @@ You can start multiple instances of the application to see the bully algorithm i
 go run main.go --id 8080 --list 8081,8082,8083
 go run main.go --id 8081 --list 8080,8082,8083
 go run main.go --id 8082 --list 8080,8081,8083
+go run main.go --id 8083 --list 8080,8081,8082
 ```
 3. The algorithm will elect a leader among the running instances
