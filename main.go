@@ -10,7 +10,7 @@ import (
 
 func main() {
 	if len(os.Args) < 5 {
-		fmt.Println("Usage: go run main.go --id <server-id> --list <comma-separated list of ports>")
+		fmt.Println("Usage: ./go-bully --id <server-id> --list <comma-separated list of ports>")
 		os.Exit(1)
 	}
 

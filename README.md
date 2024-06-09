@@ -23,6 +23,10 @@ To start the application, run:
 ```sh
 go run main.go --id <server-id> --list <comma-separated list of ports>
 ```
+To Build an executable, run:
+```sh
+go build -o go-bully main.go
+```
 
 ---
 
@@ -31,9 +35,9 @@ You can start multiple instances of the application to see the bully algorithm i
 1. Open multiple terminal windows
 2. Run application with different ports:
 ```sh
-go run main.go --id 8080 --list 8081,8082,8083
-go run main.go --id 8081 --list 8080,8082,8083
-go run main.go --id 8082 --list 8080,8081,8083
-go run main.go --id 8083 --list 8080,8081,8082
+./go-bully --id 8080 --list 8081,8082,8083
+./go-bully --id 8081 --list 8080,8082,8083
+./go-bully --id 8082 --list 8080,8081,8083
+./go-bully --id 8083 --list 8080,8081,8082
 ```
 3. The algorithm will elect a leader among the running instances
