@@ -5,31 +5,43 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 )
 
-func BullyAlgorithm(idPort string, listports []string) {
-	leader := ""
+// implements the bully algorithm for leader election
+func BullyAlgorithm(idPort string, listPorts []string, leader *string) {
+	var leaderMutex sync.Mutex
 	timeout := 5 * time.Second
+
 	for {
-		if leader == "" {
-			leader = detectLeaderFailure(idPort, listports)
-			if leader == idPort{
-				announceLeader(idPort, listports)
+		leaderMutex.Lock()
+		currentLeader := *leader
+		leaderMutex.Unlock()
+
+		// Check if there is no leader or the current leader is not alive
+		if currentLeader == "" || !isAlive(currentLeader) {
+			newLeader := detectLeaderFailure(idPort, listPorts)
+
+			leaderMutex.Lock()
+			*leader = newLeader
+			leaderMutex.Unlock()
+
+			if newLeader == idPort {
+				announceLeader(idPort, listPorts)
 			}
 		}
 
 		time.Sleep(timeout)
 	}
-
 }
 
-func detectLeaderFailure(idPort string, listports[] string) string {
+// detects the failure of the current leader and elects a new leader
+func detectLeaderFailure(idPort string, listPorts []string) string {
 	highestPort := idPort
-	for _,port := range listports{
+	for _, port := range listPorts {
 		if port > idPort {
-			alive := isAlive(port)
-			if alive {
+			if isAlive(port) {
 				highestPort = port
 			}
 		}
@@ -39,17 +51,18 @@ func detectLeaderFailure(idPort string, listports[] string) string {
 		return idPort
 	}
 
-	for _, port := range listports {
-		if port>idPort && isAlive(port){
+	for _, port := range listPorts {
+		if port > idPort && isAlive(port) {
 			return requestLeader(port)
 		}
 	}
 
-	return ""
+	return idPort
 }
 
-func announceLeader(idPort string, listports[] string){
-	for _, port := range listports {
+// announces the current process as the new leader
+func announceLeader(idPort string, listPorts []string) {
+	for _, port := range listPorts {
 		if port != idPort {
 			sendLeader(port, idPort)
 		}
@@ -57,6 +70,7 @@ func announceLeader(idPort string, listports[] string){
 	fmt.Printf("Process %s is the leader\n", idPort)
 }
 
+//  checks if the process at the given port is alive
 func isAlive(port string) bool {
 	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/alive", port))
 	if err != nil {
@@ -66,6 +80,7 @@ func isAlive(port string) bool {
 	return resp.StatusCode == http.StatusOK
 }
 
+// requests the leader information from the process at the given port
 func requestLeader(port string) string {
 	resp, err := http.Get(fmt.Sprintf("http://localhost:%s/request-leader", port))
 	if err != nil {
@@ -80,7 +95,8 @@ func requestLeader(port string) string {
 	return string(body)
 }
 
-func sendLeader(port string, leaderPort string){
+// sends the leader information to the process at the given port
+func sendLeader(port string, leaderPort string) {
 	resp, err := http.Post(fmt.Sprintf("http://localhost:%s/new-leader", port), "text/plain", strings.NewReader(leaderPort))
 	if err != nil {
 		return

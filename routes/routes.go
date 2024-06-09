@@ -6,16 +6,6 @@ import (
 	"net/http"
 )
 
-func Root(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received / request")
-	io.WriteString(w, "This is my website")
-}
-
-func Hello(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Received /hello request")
-	io.WriteString(w, "Hello there")
-}
-
 func AliveHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }

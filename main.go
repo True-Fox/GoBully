@@ -2,10 +2,8 @@ package main
 
 import (
 	"fmt"
-	"myapp/routes"
 	"myapp/server"
 	"myapp/utils"
-	"net/http"
 	"os"
 	"strings"
 )
@@ -46,18 +44,8 @@ func main() {
 	}
 
 	var leader string
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", routes.Root)
-	mux.HandleFunc("/hello", routes.Hello)
-	mux.HandleFunc("/alive", routes.AliveHandler)
-	mux.HandleFunc("/request-leader", func(w http.ResponseWriter, r *http.Request) {
-		routes.RequestLeaderHandler(w, r, leader)
-	})
-	mux.HandleFunc("/new-leader", func(w http.ResponseWriter, r *http.Request) {
-		routes.NewLeaderHandler(w, r, &leader)
-	})
-
+	mux := server.SetRoutes(&leader)
 	go server.StartServer(mux, idPort)
-	utils.BullyAlgorithm(idPort, listPorts)
+	utils.BullyAlgorithm(idPort, listPorts, &leader)
 	select {}
 }
